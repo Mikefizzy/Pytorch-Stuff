@@ -13,7 +13,7 @@ class IRNN:
 		self.c_bias = []
 		self.memory = memory
 		self.arc = arc;
-		for i in range(1, len(arc)): #hidden layers are arc[1]->arc[n-1]
+		for i in range(1, len(arc)): #hidden layers are arc[1]->arc[-1]
 			self.h_weights.append(
 				grad.Variable(torch.rand(arc[i-1], arc[i]).cuda(), 
 					requires_grad = True))

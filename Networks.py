@@ -7,13 +7,13 @@ class IRNN:
 
 		#alpha is a constant which scales the identity matrix at initialization 
 
-		self.h_weights = [] #weights directly applied to 
+		self.h_weights = [] 
 		self.c_weights = []
 		self.h_bias = []
 		self.c_bias = []
 		self.memory = memory
 		self.arc = arc;
-		for i in range(1, len(arc)): #hidden layers are arc[1]->arc[n-2]
+		for i in range(1, len(arc)): #hidden layers are arc[1]->arc[n-1]
 			self.h_weights.append(
 				grad.Variable(torch.rand(arc[i-1], arc[i]).cuda(), 
 					requires_grad = True))

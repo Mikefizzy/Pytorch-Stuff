@@ -5,6 +5,8 @@ class IRNN:
 		#arc is an array which descibes the width of each recurrent layer 
 		#ex: [10,300,300,300] 300,300,300 are all recurrent layers
 
+		#alpha is a constant which scales the identity matrix at initialization 
+
 		self.h_weights = [] #weights directly applied to 
 		self.c_weights = []
 		self.h_bias = []
@@ -42,7 +44,7 @@ class IRNN:
 				states.append(state)
 			a = states
 		return a[-1];
-		
+
 	def params(self):
 		return self.h_weights + self.c_weights + self.h_bias + self.c_bias
 

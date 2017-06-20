@@ -25,21 +25,24 @@ class IRNN:
 		#input should be [batch, memory, arc[0]] and should be already in cuda memory
 		batch_size = x.size()[0]
 		x = torch.transpose(x, 0,1)# -> [memory, batch, arc[0]]
-		a = x
+		a = x #input of each layer
 
 		for i in range(1, len(self.arc)):
 			init_state = grad.Variable(torch.zeros(batch_size, self.arc[i]).cuda())
 			states = [init_state]
 			for t in range(self.memory):
-				hx = torch.mm(a[t], self.h_weights[i-1])
+				hx = torch.mm(a[t], self.h_weights[i-1]) #linear transform with inputs
 				hx = hx + self.h_bias[i-1].expand_as(hx)
-				cx = torch.mm(states[t], self.c_weights[i-1])
+
+				cx = torch.mm(states[t], self.c_weights[i-1]) #linear transform with states and identity matrix
 				cx = cx + self.c_bias[i-1].expand_as(cx)
+
 				state = (cx + hx)
-				state = state.clamp(0)
+				state = state.clamp(0) #relu
 				states.append(state)
 			a = states
 		return a[-1];
+		
 	def params(self):
 		return self.h_weights + self.c_weights + self.h_bias + self.c_bias
 

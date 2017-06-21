@@ -15,7 +15,7 @@ class IRNN:
 		self.arc = arc;
 		for i in range(1, len(arc)): #hidden layers are arc[1]->arc[-1]
 			self.h_weights.append(
-				grad.Variable(torch.rand(arc[i-1], arc[i]).cuda(), 
+				grad.Variable((torch.rand(arc[i-1], arc[i])).cuda(), 
 					requires_grad = True))
 			self.c_weights.append(
 				grad.Variable((torch.eye(arc[i], arc[i])*alpha).cuda()
@@ -24,7 +24,7 @@ class IRNN:
 			self.c_bias.append(grad.Variable(torch.zeros(1,arc[i]).cuda(), requires_grad = True))
 
 	def forward_pass(self, x):
-		#input should be [batch, memory, arc[0]] and should be already in cuda memory
+		#input should be [batch, memory, arc[0]]
 		batch_size = x.size()[0]
 		x = torch.transpose(x, 0,1)# -> [memory, batch, arc[0]]
 		a = x #input of each layer
@@ -42,9 +42,9 @@ class IRNN:
 				state = (cx + hx)
 				state = state.clamp(0) #relu
 				states.append(state)
+				#print(state)
 			a = states
 		return a[-1];
 
 	def params(self):
 		return self.h_weights + self.c_weights + self.h_bias + self.c_bias
-

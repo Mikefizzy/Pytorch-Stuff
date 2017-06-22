@@ -15,13 +15,13 @@ class IRNN:
 		self.arc = arc;
 		for i in range(1, len(arc)): #hidden layers are arc[1]->arc[-1]
 			self.h_weights.append(
-				grad.Variable((torch.rand(arc[i-1], arc[i])).cuda(), 
+				grad.Variable((torch.rand(arc[i-1], arc[i])*2 -1), 
 					requires_grad = True))
 			self.c_weights.append(
-				grad.Variable((torch.eye(arc[i], arc[i])*alpha).cuda()
+				grad.Variable((torch.eye(arc[i], arc[i])*alpha)
 					, requires_grad = True))
-			self.h_bias.append(grad.Variable(torch.zeros(1,arc[i]).cuda(), requires_grad = True))
-			self.c_bias.append(grad.Variable(torch.zeros(1,arc[i]).cuda(), requires_grad = True))
+			self.h_bias.append(grad.Variable(torch.zeros(1,arc[i]), requires_grad = True))
+			self.c_bias.append(grad.Variable(torch.zeros(1,arc[i]), requires_grad = True))
 
 	def forward_pass(self, x):
 		#input should be [batch, memory, arc[0]]
@@ -30,7 +30,7 @@ class IRNN:
 		a = x #input of each layer
 
 		for i in range(1, len(self.arc)):
-			init_state = grad.Variable(torch.zeros(batch_size, self.arc[i]).cuda())
+			init_state = grad.Variable(torch.zeros(batch_size, self.arc[i]))
 			states = [init_state]
 			for t in range(self.memory):
 				hx = torch.mm(a[t], self.h_weights[i-1]) #linear transform with inputs
@@ -40,11 +40,12 @@ class IRNN:
 				cx = cx + self.c_bias[i-1].expand_as(cx)
 
 				state = (cx + hx)
-				state = state.clamp(0) #relu
+				state = state.clamp(min =0) #relu
 				states.append(state)
-				#print(state)
-			a = states
-		return a[-1];
+
+			#print('layer: ' + str(i) + '  max final value    ' + str(torch.max(states[-1][:])))
+			a = states[1:] #not include the initial state
+		return a[-1]
 
 	def params(self):
 		return self.h_weights + self.c_weights + self.h_bias + self.c_bias

@@ -10,7 +10,6 @@ for i in range(layers):
 	w = np.random.rand(np.shape(inputs)[1], hidden_size)*2 -1 # weights are from a normal distribution [-1, 1]
 	l = np.matmul(inputs, w)
 	l = np.maximum(l, 0, l) #relu
-	l = l/np.max(l)
 	inputs = l;
 	maximums.append(np.max(l))
 plt.plot(maximums)
